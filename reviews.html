@@ -1,0 +1,167 @@
+<!doctype html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Steve's Central Images! - Reviews</title>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+      .rev-summary{display:flex;align-items:center;gap:16px;margin:4px 0 22px;flex-wrap:wrap;}
+      .rev-avg{font-family:var(--font-serif);font-size:38px;font-weight:700;color:var(--gold);line-height:1;}
+      .rev-stars-big{color:var(--gold);font-size:22px;letter-spacing:3px;}
+      .rev-count{color:#c3cde4;}
+      .review-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+        border-left:4px solid var(--gold);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+      .review-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+      .review-name{font-weight:700;color:#fff;}
+      .review-stars{color:var(--gold);letter-spacing:2px;}
+      .review-comment{margin:8px 0 6px;}
+      .review-date{color:#a9b6d4;font-size:9pt;}
+      .star-input{font-size:30px;cursor:pointer;color:#6b7694;user-select:none;display:inline-block;}
+      .star-input span{padding:0 2px;transition:color .15s;}
+      .star-input span.on{color:var(--gold);}
+    </style>
+</head>
+
+<body>
+
+<header>
+   <img src="images/logo.jpg" alt="Steve's Central Images" width="180" height="180">
+   <h1>Customer Reviews</h1>
+</header>
+
+<nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="aboutus.html">About Us</a></li>
+          <li><a href="contactus.html">Contact Us</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="reviews.html" id="current-page">Reviews</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+</nav>
+
+<main>
+
+<h2>What Our Customers Say</h2>
+<div class="rev-summary" id="rev-summary"></div>
+<div id="reviews-list"><p>Loading reviews&hellip;</p></div>
+
+<h2>Leave a Review</h2>
+<p id="review-status" role="status"></p>
+<form id="review-form">
+<fieldset>
+<legend>Your Review</legend>
+<label>Your Name:</label>
+<input type="text" name="name" required>
+<label>Your Rating:</label>
+<div class="star-input" id="star-input">
+  <span data-v="1">&#9733;</span><span data-v="2">&#9733;</span><span data-v="3">&#9733;</span><span data-v="4">&#9733;</span><span data-v="5">&#9733;</span>
+</div>
+<input type="hidden" name="rating" id="rating" value="5">
+<label>Your Review:</label>
+<textarea name="comment" rows="5" required></textarea>
+<input type="submit" value="Post Review">
+</fieldset>
+</form>
+
+</main>
+
+<footer>
+<p>Steve Central's Images &nbsp;|&nbsp; Call us: <a href="tel:+13214420923">(321) 442-0923</a></p>
+</footer>
+
+<script>
+(function () {
+  var listEl = document.getElementById("reviews-list");
+  var summaryEl = document.getElementById("rev-summary");
+  var status = document.getElementById("review-status");
+  var ratingInput = document.getElementById("rating");
+
+  // Example reviews shown when the page is opened by itself (no server).
+  var FALLBACK = [
+    { name: "Mariane Petion", rating: 5, comment: "Steve captured our wedding beautifully — every shot tells a story. Highly recommend!", created_at: "2026-09-10 14:20 UTC" },
+    { name: "Wonder Delio", rating: 5, comment: "Professional, on time, and the graduation photos were stunning. Thank you!", created_at: "2026-09-02 10:05 UTC" },
+    { name: "Nazan Sculer", rating: 4, comment: "Great experience and lovely pictures. Will definitely book again for our next event.", created_at: "2026-08-21 18:40 UTC" }
+  ];
+
+  function esc(s) { var d = document.createElement("div"); d.textContent = (s == null ? "" : String(s)); return d.innerHTML; }
+  function starStr(n) { n = Math.max(0, Math.min(5, n || 0)); return "★".repeat(n) + "☆".repeat(5 - n); }
+
+  function render(reviews) {
+    if (!reviews.length) {
+      summaryEl.innerHTML = "<span class='rev-count'>No reviews yet — be the first to leave one!</span>";
+      listEl.innerHTML = "";
+      return;
+    }
+    var avg = reviews.reduce(function (s, r) { return s + (r.rating || 0); }, 0) / reviews.length;
+    summaryEl.innerHTML =
+      "<span class='rev-avg'>" + avg.toFixed(1) + "</span>" +
+      "<span><span class='rev-stars-big'>" + starStr(Math.round(avg)) + "</span><br>" +
+      "<span class='rev-count'>" + reviews.length + " review" + (reviews.length === 1 ? "" : "s") + "</span></span>";
+    listEl.innerHTML = reviews.map(function (r) {
+      return "<div class='review-card'><div class='review-head'>" +
+             "<span class='review-name'>" + esc(r.name) + "</span>" +
+             "<span class='review-stars'>" + starStr(r.rating) + "</span></div>" +
+             "<p class='review-comment'>" + esc(r.comment) + "</p>" +
+             "<div class='review-date'>" + esc(r.created_at) + "</div></div>";
+    }).join("");
+  }
+
+  function load() {
+    fetch("/api/reviews")
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (data) { render(data.reviews || []); })
+      .catch(function () { render(FALLBACK); });
+  }
+
+  // star rating picker
+  var stars = document.querySelectorAll("#star-input span");
+  function paint(v) { stars.forEach(function (s) { s.classList.toggle("on", Number(s.dataset.v) <= v); }); }
+  stars.forEach(function (s) {
+    s.addEventListener("click", function () { ratingInput.value = s.dataset.v; paint(Number(s.dataset.v)); });
+    s.addEventListener("mouseenter", function () { paint(Number(s.dataset.v)); });
+  });
+  document.getElementById("star-input").addEventListener("mouseleave", function () { paint(Number(ratingInput.value)); });
+  paint(5);
+
+  document.getElementById("review-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var form = e.target;
+    status.textContent = "Posting...";
+    fetch("/api/reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: form.name.value, rating: ratingInput.value, comment: form.comment.value })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          status.style.color = "#3ec46d";
+          status.textContent = data.message;
+          form.reset();
+          ratingInput.value = "5"; paint(5);
+          load();
+        } else {
+          status.style.color = "#ff6b6b";
+          status.textContent = data.error || "Something went wrong.";
+        }
+      })
+      .catch(function () {
+        status.style.color = "#ff6b6b";
+        status.textContent = "Could not reach the server (reviews can only be posted with the server running).";
+      });
+  });
+
+  load();
+})();
+</script>
+
+</body>
+
+</html>

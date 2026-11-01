@@ -1,0 +1,159 @@
+<!doctype html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Steve's Central Images! - Pricing</title>
+
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+
+<header>
+   <img src="images/logo.jpg" alt="Steve's Central Images" width="180" height="180">
+   <h1>Our Packages &amp; Pricing</h1>
+</header>
+
+<nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="pricing.html" id="current-page">Pricing</a></li>
+          <li><a href="aboutus.html">About Us</a></li>
+          <li><a href="contactus.html">Contact Us</a></li>
+          <li><a href="history.html">History</a></li>
+          <li><a href="library.html">Library</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+</nav>
+
+<main>
+
+<h2>Choose Your Package</h2>
+<p>Every package is delivered on time by our team. Prices are loaded live from our catalog.</p>
+
+<table id="table-format">
+  <thead>
+    <tr><th>Package</th><th>Quality</th><th>Price</th></tr>
+  </thead>
+  <tbody id="pricing-rows">
+    <tr><td colspan="3">Loading packages&hellip;</td></tr>
+  </tbody>
+</table>
+
+<h2>Place an Order</h2>
+<p id="order-status" role="status"></p>
+<form id="order-form">
+<fieldset>
+<legend>Order Details</legend>
+<label>Full Name:</label>
+<input type="text" name="name" required>
+<label>Email:</label>
+<input type="email" name="email" required>
+<label>Package:</label>
+<select name="package" id="order-package" required></select>
+<label>When do you need us? (choose a date)</label>
+<input type="date" name="service_date" id="order-date" required>
+<input type="submit" value="Place Order">
+</fieldset>
+</form>
+
+<h2>Our Gallery</h2>
+<p>Our favorite shots, sliding both ways across our price list.</p>
+<div class="auto-gallery"></div>
+
+</main>
+
+<footer>
+<p>Steve Central's Images &nbsp;|&nbsp; Call us: <a href="tel:+13214420923">(321) 442-0923</a></p>
+</footer>
+
+<script>
+(function () {
+  var rows = document.getElementById('pricing-rows');
+  var select = document.getElementById('order-package');
+  var status = document.getElementById('order-status');
+  var products = [];
+
+  // Built-in copy of the packages, used when the server isn't running
+  // (e.g. the page is opened directly as a file). Keep in sync with server.py.
+  var FALLBACK_PRODUCTS = [
+    { id: 1, name: 'Mini Session (30 min)', quality: 'Standard', price: 750 },
+    { id: 2, name: 'Portrait Session', quality: 'Standard', price: 1500 },
+    { id: 3, name: 'Graduation / High School Portrait', quality: 'Standard', price: 3000 },
+    { id: 4, name: 'Birthday & Party Coverage', quality: 'Standard and 3D', price: 3800 },
+    { id: 5, name: 'Build Your Own / Event Pictures', quality: 'Standard and 3D', price: 4500 },
+    { id: 6, name: 'Family / Wedding Portrait', quality: 'Quality 3D', price: 5300 },
+    { id: 7, name: 'Premium Full-Day Wedding', quality: 'Premium 3D', price: 7500 }
+  ];
+
+  function renderProducts(list) {
+    products = list;
+    rows.innerHTML = '';
+    select.innerHTML = '';
+    list.forEach(function (p) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + p.name + '</td><td>' + p.quality +
+                     '</td><td>$' + p.price.toLocaleString() + '</td>';
+      rows.appendChild(tr);
+
+      var opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.name + ' - $' + p.price.toLocaleString();
+      select.appendChild(opt);
+    });
+  }
+
+  fetch('/api/products')
+    .then(function (r) { return r.json(); })
+    .then(function (data) { renderProducts(data.products); })
+    .catch(function () { renderProducts(FALLBACK_PRODUCTS); });
+
+  // Don't allow choosing a date in the past.
+  var dateInput = document.getElementById('order-date');
+  var today = new Date().toISOString().split('T')[0];
+  dateInput.min = today;
+
+  document.getElementById('order-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var form = e.target;
+    var chosen = products.filter(function (p) { return String(p.id) === select.value; })[0];
+    if (!chosen) { return; }
+    status.textContent = 'Placing order...';
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: form.name.value,
+        email: form.email.value,
+        package: chosen.name,
+        price: chosen.price,
+        service_date: form.service_date.value
+      })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          status.style.color = '#3ec46d';
+          status.textContent = data.message;
+          form.reset();
+        } else {
+          status.style.color = '#ff6b6b';
+          status.textContent = data.error || 'Something went wrong.';
+        }
+      })
+      .catch(function () {
+        status.style.color = '#ff6b6b';
+        status.textContent = 'Could not reach the server.';
+      });
+  });
+})();
+</script>
+<script src="gallery.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard - Steve Central's Images</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+body{margin:0;}
+.dash-layout{display:flex;min-height:100vh;align-items:stretch;}
+.dash-sidebar{width:235px;flex:none;background:linear-gradient(180deg,var(--ink),var(--ink-2));
+  color:#ece7f5;padding:26px 18px;border-right:1px solid rgba(224,192,78,0.3);
+  position:sticky;top:0;align-self:flex-start;min-height:100vh;}
+.side-logo{display:block;width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:12px;}
+.dash-brand{font-family:var(--font-serif);color:var(--gold);font-size:19px;font-weight:700;line-height:1.3;}
+.dash-sub{color:#a9b6d4;font-size:11pt;margin:4px 0 16px;}
+.greet{color:#c3cde4;font-size:10.5pt;line-height:1.55;margin:0 0 20px;}
+.greet b{color:#fff;}
+.greet span{color:#a9b6d4;}
+.dash-nav a{display:block;color:#efe9f5;text-decoration:none;padding:11px 14px;border-radius:8px;
+  margin-bottom:6px;font-weight:600;border-left:3px solid transparent;transition:background .2s,color .2s;}
+.dash-nav a:hover{background:rgba(224,192,78,0.10);color:var(--gold);}
+.dash-nav a.active{background:rgba(224,192,78,0.16);color:var(--gold);border-left-color:var(--gold);}
+.side-quick{margin-top:22px;border-top:1px solid rgba(255,255,255,0.12);padding-top:14px;}
+.side-quick a{display:block;color:#c3cde4;text-decoration:none;font-size:10.5pt;padding:7px 0;}
+.side-quick a:hover{color:var(--gold);}
+.dash-main{flex:1;min-width:0;padding:34px 40px;color:#eef2fb;}
+.dash-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.dash-head h1{font-family:var(--font-serif);color:var(--gold);margin:0 0 12px;font-size:30px;}
+.updated{color:#a9b6d4;font-size:10pt;}
+.dash-main h2{font-family:var(--font-serif);color:var(--gold);border-bottom:2px solid rgba(224,192,78,0.4);
+  padding-bottom:8px;margin:28px 0 14px;font-size:22px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:15px;margin:6px 0 10px;}
+.kpi-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-top:4px solid var(--gold);border-radius:12px;padding:16px 18px;}
+.kpi-icon{color:var(--gold);display:block;margin-bottom:8px;}
+.kpi-icon svg{width:24px;height:24px;}
+.kpi-value{font-family:var(--font-serif);font-size:29px;font-weight:700;color:var(--gold);line-height:1.1;}
+.kpi-label{color:#c3cde4;font-size:10.5pt;margin-top:6px;}
+.month-chart{display:flex;align-items:flex-end;gap:14px;height:180px;margin:6px 0 4px;padding:0 4px;}
+.m-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.m-barwrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;}
+.m-bar{width:70%;max-width:46px;background:linear-gradient(180deg,var(--gold-soft),var(--gold-deep));border-radius:6px 6px 0 0;min-height:3px;}
+.m-val{color:var(--gold-soft);font-size:9pt;margin-top:7px;font-weight:600;}
+.m-label{color:#a9b6d4;font-size:9pt;}
+.dash-cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;}
+.bar-row{display:flex;align-items:center;gap:12px;margin:10px 0;}
+.bar-label{width:210px;flex:none;font-weight:600;color:#ece7f5;}
+.bar-track{flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:24px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--gold));border-radius:6px;min-width:2px;}
+.bar-value{width:160px;flex:none;text-align:right;font-weight:700;color:var(--gold-soft);}
+.bar-sub{color:#a9b6d4;font-weight:400;font-size:10pt;}
+.status-bar{display:flex;height:30px;border-radius:8px;overflow:hidden;margin:10px 0 6px;}
+.status-seg{display:flex;align-items:center;justify-content:center;font-weight:700;min-width:0;overflow:hidden;white-space:nowrap;}
+.status-handled{background:#3ec46d;color:#0d2b16;}
+.status-pending{background:#e7c757;color:#241a33;}
+.muted-note{color:#a9b6d4;}
+.dash-list{list-style:none;padding:0;margin:0;}
+.dash-list li{padding:10px 12px;border-left:3px solid var(--gold);background:rgba(255,255,255,0.04);border-radius:4px;margin-bottom:8px;}
+.activity{list-style:none;padding:0;margin:0;}
+.activity li{padding:9px 12px;border-left:3px solid var(--gold);background:rgba(255,255,255,0.04);border-radius:4px;margin-bottom:7px;}
+.activity li.act-msg{border-left-color:var(--purple);}
+.act-date{display:block;color:#a9b6d4;font-size:8.5pt;margin-bottom:2px;}
+.range-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 20px;}
+.range-bar .rlabel{color:#a9b6d4;font-size:10pt;margin-right:2px;}
+.pill{display:inline-block;padding:6px 14px;border-radius:20px;text-decoration:none;font-size:10pt;font-weight:600;color:#c3cde4;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);cursor:pointer;}
+.pill:hover{color:var(--gold);border-color:rgba(224,192,78,0.5);}
+.pill.active{background:var(--gold);color:var(--ink);border-color:var(--gold);}
+.top-cust{list-style:none;padding:0;margin:0;}
+.top-cust li{display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:6px;margin-bottom:7px;}
+.cust-rank{flex:none;width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:10pt;}
+.cust-name{flex:1;min-width:0;font-weight:600;color:#ece7f5;display:flex;flex-direction:column;}
+.cust-email{color:#a9b6d4;font-weight:400;font-size:9pt;}
+.cust-spent{flex:none;text-align:right;font-weight:700;color:var(--gold-soft);display:flex;flex-direction:column;}
+.cust-orders{color:#a9b6d4;font-weight:400;font-size:9pt;}
+@media(max-width:800px){
+  .dash-layout{flex-direction:column;}
+  .dash-sidebar{width:auto;min-height:auto;position:static;border-right:none;border-bottom:1px solid rgba(224,192,78,0.3);}
+  .dash-nav{display:flex;flex-wrap:wrap;gap:6px;}
+  .dash-nav a{margin-bottom:0;}
+  .dash-cols{grid-template-columns:1fr;}
+  .bar-label{width:120px;}.bar-value{width:auto;}
+}
+</style>
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <img src="images/logo.jpg" alt="Steve Central's Images" class="side-logo">
+    <div class="dash-brand">Steve Central's Images</div>
+    <div class="dash-sub">SCI Dashboard</div>
+    <div class="greet">Welcome back,<br><b>Steve</b><br><span id="greet-date"></span></div>
+    <nav class="dash-nav">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="/admin">Admin</a>
+      <a href="index.html">&larr; Back to site</a>
+    </nav>
+    <div class="side-quick">
+      <a href="/admin/export/orders.csv">Export Orders (CSV)</a>
+      <a href="/admin/export/contacts.csv">Export Messages (CSV)</a>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-head">
+      <h1>SCI Dashboard</h1>
+      <span class="updated" id="updated"></span>
+    </div>
+    <div class="range-bar"><span class="rlabel">Showing:</span><span id="pills"></span></div>
+    <div id="dash-body"><p id="loading">Loading dashboard&hellip;</p></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var ORDERS = [], CONTACTS = [], RANGE = "all";
+  var RANGES = [["all", "All time"], ["7", "7 days"], ["30", "30 days"], ["90", "90 days"], ["year", "This year"]];
+  var ABBR = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function svg(p) {
+    return "<svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' " +
+           "stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'>" + p + "</svg>";
+  }
+  var ICON = {
+    box: svg("<path d='M21 8l-9-5-9 5 9 5 9-5z'/><path d='M3 8v8l9 5 9-5V8'/><path d='M12 13v8'/>"),
+    cash: svg("<line x1='12' y1='2' x2='12' y2='22'/><path d='M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/>"),
+    clock: svg("<circle cx='12' cy='12' r='9'/><path d='M12 7v5l3 2'/>"),
+    mail: svg("<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M3 7l9 6 9-6'/>"),
+    chart: svg("<path d='M4 20V10'/><path d='M10 20V4'/><path d='M16 20v-7'/><path d='M22 20H2'/>"),
+    cal: svg("<rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 9h18M8 3v4M16 3v4'/>")
+  };
+
+  function money(n) { return "$" + Number(n || 0).toLocaleString(); }
+  function esc(s) { var d = document.createElement("div"); d.textContent = (s == null ? "" : String(s)); return d.innerHTML; }
+
+  function cutoffFor(key) {
+    var now = new Date();
+    if (key === "year") return now.getFullYear() + "-01-01";
+    if (key === "7" || key === "30" || key === "90") {
+      return new Date(Date.now() - parseInt(key, 10) * 86400000).toISOString().slice(0, 10);
+    }
+    return null;
+  }
+  function inRange(ca, cut) { return !cut || (String(ca || "").slice(0, 10) >= cut); }
+
+  function renderPills() {
+    document.getElementById("pills").innerHTML = RANGES.map(function (r) {
+      return "<span class='pill" + (r[0] === RANGE ? " active" : "") + "' data-r='" + r[0] + "'>" + r[1] + "</span>";
+    }).join("");
+  }
+
+  function render() {
+    renderPills();
+    var cut = cutoffFor(RANGE);
+    var fo = ORDERS.filter(function (o) { return inRange(o.created_at, cut); });
+    var fc = CONTACTS.filter(function (c) { return inRange(c.created_at, cut); });
+
+    var totalOrders = fo.length;
+    var totalRevenue = fo.reduce(function (s, o) { return s + (o.price || 0); }, 0);
+    var handled = fo.filter(function (o) { return o.handled; }).length;
+    var pending = totalOrders - handled;
+    var avg = totalOrders ? Math.round(totalRevenue / totalOrders) : 0;
+    var totalContacts = fc.length;
+
+    var kpis = [
+      [ICON.box, "Orders", totalOrders],
+      [ICON.cash, "Revenue", money(totalRevenue)],
+      [ICON.chart, "Avg Order Value", money(avg)],
+      [ICON.clock, "Pending Orders", pending],
+      [ICON.cal, "Handled Orders", handled],
+      [ICON.mail, "Contact Messages", totalContacts]
+    ];
+    var kpiHtml = kpis.map(function (k) {
+      return "<div class='kpi-card'><span class='kpi-icon'>" + k[0] + "</span><div class='kpi-value'>" +
+             k[2] + "</div><div class='kpi-label'>" + k[1] + "</div></div>";
+    }).join("");
+
+    // revenue by package
+    var pkg = {};
+    fo.forEach(function (o) {
+      var n = o.package || "(unknown)";
+      pkg[n] = pkg[n] || { c: 0, r: 0 };
+      pkg[n].c++; pkg[n].r += (o.price || 0);
+    });
+    var byPkg = Object.keys(pkg).map(function (n) { return [n, pkg[n]]; }).sort(function (a, b) { return b[1].r - a[1].r; });
+    var maxRev = byPkg.reduce(function (m, x) { return Math.max(m, x[1].r); }, 0);
+    var bars = byPkg.length ? byPkg.map(function (x) {
+      var pct = maxRev ? Math.round(x[1].r / maxRev * 100) : 0;
+      return "<div class='bar-row'><div class='bar-label'>" + esc(x[0]) +
+             "</div><div class='bar-track'><div class='bar-fill' style='width:" + pct + "%'></div></div>" +
+             "<div class='bar-value'>" + money(x[1].r) + " <span class='bar-sub'>(" + x[1].c + ")</span></div></div>";
+    }).join("") : "<p>No orders in this range yet.</p>";
+
+    // top customers
+    var cust = {};
+    fo.forEach(function (o) {
+      var k = (o.name || "(unknown)") + "||" + (o.email || "");
+      cust[k] = cust[k] || { name: o.name || "(unknown)", email: o.email || "", orders: 0, spent: 0 };
+      cust[k].orders++; cust[k].spent += (o.price || 0);
+    });
+    var top = Object.keys(cust).map(function (k) { return cust[k]; })
+      .sort(function (a, b) { return b.spent - a.spent; }).slice(0, 6);
+    var topHtml = top.length ? "<ul class='top-cust'>" + top.map(function (c, i) {
+      return "<li><span class='cust-rank'>" + (i + 1) + "</span><span class='cust-name'>" + esc(c.name) +
+             "<span class='cust-email'>" + esc(c.email) + "</span></span><span class='cust-spent'>" +
+             money(c.spent) + "<span class='cust-orders'>" + c.orders + " order(s)</span></span></li>";
+    }).join("") + "</ul>" : "<p>No customers in this range yet.</p>";
+
+    // monthly revenue (all orders, last 6 months)
+    var now = new Date();
+    var revM = {};
+    ORDERS.forEach(function (o) { var k = String(o.created_at || "").slice(0, 7); if (k) revM[k] = (revM[k] || 0) + (o.price || 0); });
+    var months = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      var key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+      months.push([ABBR[d.getMonth() + 1], revM[key] || 0]);
+    }
+    var maxM = months.reduce(function (m, x) { return Math.max(m, x[1]); }, 0);
+    var monthChart = "<div class='month-chart'>" + months.map(function (x) {
+      var pct = maxM ? Math.round(x[1] / maxM * 100) : 0;
+      var short = x[1] >= 1000 ? ("$" + (x[1] / 1000).toFixed(1) + "k") : ("$" + x[1]);
+      return "<div class='m-col'><div class='m-barwrap'><div class='m-bar' style='height:" + pct +
+             "%'></div></div><div class='m-val'>" + short + "</div><div class='m-label'>" + x[0] + "</div></div>";
+    }).join("") + "</div>";
+
+    // order status
+    var statusHtml;
+    if (totalOrders) {
+      var hp = Math.round(handled / totalOrders * 100), pp = 100 - hp;
+      statusHtml = "<div class='status-bar'><div class='status-seg status-handled' style='width:" + hp + "%'>" + handled +
+                   "</div><div class='status-seg status-pending' style='width:" + pp + "%'>" + pending +
+                   "</div></div><p class='muted-note'>" + hp + "% of orders handled (" + handled + " handled, " + pending + " pending).</p>";
+    } else { statusHtml = "<p>No orders in this range yet.</p>"; }
+
+    // upcoming (all orders, future)
+    var today = new Date().toISOString().slice(0, 10);
+    var up = ORDERS.filter(function (o) { return o.service_date && o.service_date >= today; })
+      .sort(function (a, b) { return a.service_date < b.service_date ? -1 : 1; }).slice(0, 8);
+    var upHtml = up.length ? "<ul class='dash-list'>" + up.map(function (o) {
+      return "<li><strong>" + esc(o.service_date) + "</strong> &mdash; " + esc(o.name) + " (" + esc(o.package) + ")</li>";
+    }).join("") + "</ul>" : "<p>No upcoming bookings scheduled.</p>";
+
+    // recent activity (filtered)
+    var events = [];
+    fo.forEach(function (o) { events.push([o.created_at || "", "order", "New order &mdash; " + esc(o.name) + ": " + esc(o.package) + " (" + money(o.price) + ")"]); });
+    fc.forEach(function (c) { events.push([c.created_at || "", "msg", "New message &mdash; " + esc(c.fname) + " (" + esc(c.email) + ")"]); });
+    events.sort(function (a, b) { return a[0] < b[0] ? 1 : -1; });
+    events = events.slice(0, 8);
+    var actHtml = events.length ? "<ul class='activity'>" + events.map(function (e) {
+      return "<li class='act-" + e[1] + "'><span class='act-date'>" + esc(e[0]) + "</span>" + e[2] + "</li>";
+    }).join("") + "</ul>" : "<p>No activity yet.</p>";
+
+    document.getElementById("dash-body").innerHTML =
+      "<div class='kpi-grid'>" + kpiHtml + "</div>" +
+      "<h2>Monthly Revenue</h2>" + monthChart +
+      "<h2>Revenue by Package</h2>" + bars +
+      "<h2>Top Customers</h2>" + topHtml +
+      "<div class='dash-cols'><div><h2>Order Status</h2>" + statusHtml +
+      "</div><div><h2>Upcoming Bookings</h2>" + upHtml + "</div></div>" +
+      "<h2>Recent Activity</h2>" + actHtml;
+  }
+
+  // Demo data embedded so the dashboard still works when opened by itself
+  // (no server). The live API is tried first; this is only the fallback.
+  function _ago(d){var x=new Date(Date.now()-d*86400000);return x.toISOString().slice(0,10)+" 12:00 UTC";}
+  function _ahead(d){return new Date(Date.now()+d*86400000).toISOString().slice(0,10);}
+  var EMBEDDED_ORDERS = [
+    {name:"Mariane Petion",email:"mariane@example.com",package:"Family / Wedding Portrait",price:5300,service_date:_ahead(10),handled:0,created_at:_ago(4)},
+    {name:"Adu Freeman",email:"adu@example.com",package:"Graduation / High School Portrait",price:3000,service_date:_ahead(26),handled:0,created_at:_ago(12)},
+    {name:"Riley Mosafa",email:"riley@example.com",package:"Mini Session (30 min)",price:750,service_date:_ahead(5),handled:0,created_at:_ago(26)},
+    {name:"Wonder Delio",email:"wonder@example.com",package:"Build Your Own / Event Pictures",price:4500,service_date:null,handled:1,created_at:_ago(48)},
+    {name:"Nazan Sculer",email:"nazan@example.com",package:"Premium Full-Day Wedding",price:7500,service_date:_ahead(40),handled:0,created_at:_ago(70)},
+    {name:"Sarah Karilyl",email:"sarah@example.com",package:"Portrait Session",price:1500,service_date:_ahead(18),handled:0,created_at:_ago(95)}
+  ];
+  var EMBEDDED_CONTACTS = [
+    {fname:"Mariane Petion",email:"mariane@example.com",created_at:_ago(2)},
+    {fname:"Adu Freeman",email:"adu@example.com",created_at:_ago(9)},
+    {fname:"Riley Mosafa",email:"riley@example.com",created_at:_ago(21)}
+  ];
+
+  function load() {
+    Promise.all([
+      fetch("/api/orders").then(function (r) { if (!r.ok) throw 0; return r.json(); }),
+      fetch("/api/contacts").then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    ]).then(function (res) {
+      ORDERS = res[0].orders || [];
+      CONTACTS = res[1].contacts || [];
+      document.getElementById("updated").innerHTML =
+        "Updated " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + " &middot; auto-refreshes";
+      render();
+    }).catch(function () {
+      // No live server: show the embedded snapshot of your real data.
+      ORDERS = EMBEDDED_ORDERS;
+      CONTACTS = EMBEDDED_CONTACTS;
+      document.getElementById("updated").innerHTML =
+        "<span style='color:var(--gold-soft)'>Demo data</span> &middot; start the server for your live data";
+      render();
+    });
+  }
+
+  document.getElementById("greet-date").textContent =
+    new Date().toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  document.getElementById("pills").addEventListener("click", function (e) {
+    var a = e.target.closest(".pill");
+    if (!a) return;
+    RANGE = a.getAttribute("data-r");
+    render();
+  });
+  renderPills();
+  load();
+  setInterval(load, 60000);
+})();
+</script>
+</body>
+</html>

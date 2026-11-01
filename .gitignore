@@ -1,0 +1,5 @@
+# Do NOT upload these to GitHub / the internet:
+my-email-password.txt   # contains your Yahoo app password (plain text)
+steve.db                # local database with submitted messages/orders
+.claude/                # local editor settings
+INTERVIEW-PREP.md       # personal interview study notes (keep private)

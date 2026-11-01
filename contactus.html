@@ -1,0 +1,113 @@
+<!doctype html>
+
+<html lang ="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Steve's Central Images! - Contact Us</title>
+	
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	
+</head>
+
+<body>
+
+<header>
+   <img src="images/logo.jpg" alt="Steve's Central Images" width="180" height="180">
+   <h1>Steve's Central Images!</h1>
+</header>
+   
+   <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+		  <li><a href="pricing.html">Pricing</a></li>
+		  <li><a href="aboutus.html">About Us</a></li>
+		  <li><a href="contactus.html" id="current-page">Contact Us</a></li>
+		  <li><a href="history.html">History</a></li>
+		  <li><a href="library.html">Library</a></li>
+		  <li><a href="reviews.html">Reviews</a></li>
+		  <li><a href="dashboard.html">Dashboard</a></li>
+		</ul>
+		
+   </nav>
+
+<main>
+<h2>Call Us</h2>
+<p>Prefer to talk? Reach Steve Central's Images directly at
+   <strong><a href="tel:+13214420923">(321) 442-0923</a></strong>.</p>
+
+<h2>Please Tell Us What Your Request Are!:</h2>
+<p id="contact-status" role="status"></p>
+<form id="contact-form" action="/api/contact" method="post" autocomplete="on">
+
+<fieldset>
+<legend>Personal Information:</legend>
+<label>Full Name:</label>
+<input type="text" name="fname">
+<label>Email:</label>
+<input type="email" name="email" autocomplete="off">
+<label>Phone:</label>
+<input type="tel" name="phone">
+</fieldset>
+
+<br></br>
+
+<label class="left-align">Comments:</label>
+<textarea name="comments" rows="15" cols="41"></textarea>
+<br>
+</br>
+<input type="submit" value="Submit Form">
+</form>
+
+<script>
+document.getElementById('contact-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var form = e.target;
+  var status = document.getElementById('contact-status');
+  var payload = {
+    fname: form.fname.value,
+    email: form.email.value,
+    phone: form.phone.value,
+    comments: form.comments.value
+  };
+  status.textContent = 'Sending...';
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.ok) {
+        status.style.color = 'green';
+        status.textContent = data.message;
+        form.reset();
+      } else {
+        status.style.color = 'red';
+        status.textContent = data.error || 'Something went wrong.';
+      }
+    })
+    .catch(function () {
+      status.style.color = 'red';
+      status.textContent = 'Could not reach the server.';
+    });
+});
+</script>
+   
+<h2>Our Gallery</h2>
+<p>Our favorite shots, sliding both ways across our price list.</p>
+
+<div class="auto-gallery"></div>
+   </main>
+
+<footer>
+<p>Steve Central's Images &nbsp;|&nbsp; Call us: <a href="tel:+13214420923">(321) 442-0923</a></p>
+</footer>
+
+<script src="gallery.js"></script>
+
+</body>
+
+
+</html>
